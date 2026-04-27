@@ -1,0 +1,57 @@
+services:
+  # Backend Service
+  - type: web
+    name: megpt-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: HUGGINGFACE_API_KEY
+        sync: false
+      - key: TEXT_MODEL
+        value: meta-llama/Llama-3.1-8B-Instruct
+      - key: CODE_MODEL
+        value: Qwen/Qwen2.5-Coder-7B-Instruct
+      - key: IMAGE_MODEL
+        value: black-forest-labs/FLUX.1-schnell
+      - key: IMAGE_EDIT_MODEL
+        value: black-forest-labs/FLUX.1-Kontext-dev
+      - key: VISION_MODEL
+        value: HuggingFaceTB/SmolVLM-Instruct
+      - key: DB_PATH
+        value: ./data/megpt.db
+    disk:
+      name: megpt-data
+      mountPath: backend/data
+      sizeGB: 1
+
+  # Frontend Service
+  - type: web
+    name: megpt-frontend
+    env: static
+    region: oregon
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/build
+    envVars:
+      - key: REACT_APP_API_URL
+        fromService:
+          name: megpt-backend
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Strict-Transport-Security
+        value: max-age=31536000; includeSubDomains
