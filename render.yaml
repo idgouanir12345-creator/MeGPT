@@ -26,17 +26,11 @@ services:
         value: HuggingFaceTB/SmolVLM-Instruct
       - key: DB_PATH
         value: ./data/megpt.db
-    disk:
-      name: megpt-data
-      mountPath: backend/data
-      sizeGB: 1
 
   # Frontend Service
-  - type: web
+  - type: static
     name: megpt-frontend
     env: static
-    region: oregon
-    plan: free
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: frontend/build
     envVars:
