@@ -10,43 +10,46 @@ This guide explains how to deploy MeGPT to Render using the provided configurati
 
 ## Deployment Steps
 
-### Step 1: Connect Render to GitHub
+The `render.yaml` file deploys the backend service. The frontend should be deployed separately as a Static Site.
+
+### Step 1: Deploy Backend Service
 
 1. Log in to your [Render Dashboard](https://dashboard.render.com)
 2. Click **"New +"** and select **"Blueprint"**
 3. Connect your GitHub account if you haven't already
 4. Select the repository: `idgouanir12345-creator/MeGPT`
 5. Render will automatically detect the `render.yaml` file
+6. Set the required environment variable:
+   - **HUGGINGFACE_API_KEY**: Your HuggingFace API token (get from [HuggingFace settings](https://huggingface.co/settings/tokens))
+7. Click **"Apply"** to deploy
 
-### Step 2: Configure Environment Variables
+### Step 2: Deploy Frontend Service
 
-During the Blueprint setup, Render will show the environment variables from `render.yaml`. You need to set the following:
+After the backend is deployed:
 
-#### Required Variables:
-- **HUGGINGFACE_API_KEY**: Your HuggingFace API token (get from [HuggingFace settings](https://huggingface.co/settings/tokens))
+1. In Render Dashboard, click **"New +"** → **"Static Site"**
+2. Connect your repository: `idgouanir12345-creator/MeGPT`
+3. Configure:
+   - **Name**: `megpt-frontend`
+   - **Branch**: `main`
+   - **Root Directory**: (leave blank)
+   - **Build Command**: `cd frontend && npm install && npm run build`
+   - **Publish Directory**: `frontend/build`
+4. Add environment variable:
+   - **Key**: `REACT_APP_API_URL`
+   - **Value**: `https://megpt-backend-xxxx.onrender.com` (use your actual backend URL)
+5. Click **"Create Static Site"**
 
-#### Optional Variables:
-- **WEB_SEARCH_API_KEY**: If you want web search functionality (e.g., Serper API key)
-
-### Step 3: Deploy
-
-1. Click **"Apply"** to start the deployment
-2. Render will:
-   - Deploy the backend as a Web Service
-   - Deploy the frontend as a Static Site
-   - Automatically connect them via environment variables
-   - Create a persistent disk for the database
-
-### Step 4: Verify Deployment
+### Step 3: Verify Deployment
 
 After deployment completes (usually 5-10 minutes):
 
-1. **Backend URL**: You'll get a URL like `https://megpt-backend-xxxx.onrender.com`
-2. **Frontend URL**: You'll get a URL like `https://megpt-frontend-xxxx.onrender.com`
+1. **Backend URL**: `https://megpt-backend-xxxx.onrender.com`
+2. **Frontend URL**: `https://megpt-frontend-xxxx.onrender.com`
 
 Visit the frontend URL to access your application.
 
-## Manual Deployment (Alternative)
+## Fully Automatic Deployment (Alternative)
 
 If you prefer to deploy services separately:
 

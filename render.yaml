@@ -26,26 +26,3 @@ services:
         value: HuggingFaceTB/SmolVLM-Instruct
       - key: DB_PATH
         value: ./data/megpt.db
-
-  # Frontend Service
-  - type: static
-    name: megpt-frontend
-    env: static
-    buildCommand: cd frontend && npm install && npm run build
-    staticPublishPath: frontend/build
-    envVars:
-      - key: REACT_APP_API_URL
-        fromService:
-          name: megpt-backend
-          type: web
-          envVarKey: RENDER_EXTERNAL_URL
-    headers:
-      - path: /*
-        name: X-Frame-Options
-        value: SAMEORIGIN
-      - path: /*
-        name: X-Content-Type-Options
-        value: nosniff
-      - path: /*
-        name: Strict-Transport-Security
-        value: max-age=31536000; includeSubDomains
